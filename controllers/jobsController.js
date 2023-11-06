@@ -1,21 +1,37 @@
+import Job from "../model/Job.js"
+import { StatusCodes } from "http-status-codes"
+import { BadRequestError, UnAuthenticatedError } from "../errors/index.js"
+
 const createJob = async (req, res) => {
-  res.send("create job");
-};
+  const { company, position } = req.body
+
+  if (!company || !position) {
+    throw new BadRequestError("Please provide all the values")
+  }
+
+  req.body.createdBy = req.user.userId
+
+  const job = await Job.create(req.body)
+  res.status(StatusCodes.CREATED).json({ job })
+}
 
 const deleteJob = async (req, res) => {
-  res.send("delete job");
-};
+  res.send("delete job")
+}
 
 const getAllJobs = async (req, res) => {
-  res.send("get all jobs");
-};
+  const jobs = await Job.find({ createdBy: req.user.userId })
+  res
+    .status(StatusCodes.OK)
+    .json({ jobs, totalJobs: jobs.length, numOfPages: 1 })
+}
 
 const updateJob = async (req, res) => {
-  res.send("update job");
-};
+  res.send("update job")
+}
 
 const showStats = async (req, res) => {
-  res.send("showStats");
-};
+  res.send("showStats")
+}
 
-export { createJob, deleteJob, getAllJobs, showStats, updateJob };
+export { createJob, deleteJob, getAllJobs, showStats, updateJob }
